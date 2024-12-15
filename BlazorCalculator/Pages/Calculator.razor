@@ -1,0 +1,139 @@
+﻿@page "/Calculator"
+<style>
+.calculator {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: auto;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.display {
+    height: 50px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: right;
+    padding: 10px;
+    font-size: 1.5em;
+}
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+}
+
+button {
+    height: 50px;
+    font-size: 1.2em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #d0d0d0;
+}
+
+button.equal:hover {
+    background-color: #0056b3;
+}
+
+</style>
+
+
+<div class="Background-Calculator">
+    <h3><strong>Calculator in Blazor</strong></h3>
+
+    <div class="calculator">
+        <div class="display">
+            @resultado
+        </div>
+        <div class="buttons">
+            @foreach (var item in Valores)
+            {
+                <button @onclick="() => BtnsCalculator(item)" class="@item">@item</button>
+            }
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private List<int> Numero1 = new List<int>();
+
+    private string Operador{ get; set; }
+
+    private List<int> Numero2 = new List<int>();
+
+    private string resultado { get; set;}
+
+    private List<string> Valores = new List<string> 
+    {"8","9","7","%","6","5","4","*","3","2","1","+","0","-", "=" };
+
+    private void LimpaVariaveis()
+    {
+        Numero1.Clear();
+        Numero2.Clear();
+        Operador = null;
+    }
+
+    private int RealizaCalculo()
+    {
+        int result = 0;
+
+        switch (Operador)
+        {
+            case "+":
+                result = Convert.ToInt32(string.Join("", Numero1)) + Convert.ToInt32(string.Join("", Numero2));
+                break;
+            case "-":
+                result = Convert.ToInt32(string.Join("", Numero1)) - Convert.ToInt32(string.Join("", Numero2));
+                break;
+            case "%":
+                result = Convert.ToInt32(string.Join("", Numero1)) / Convert.ToInt32(string.Join("", Numero2));
+                break;
+            case "*":
+                result = Convert.ToInt32(string.Join("", Numero1)) * Convert.ToInt32(string.Join("", Numero2));
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    private void BtnsCalculator(string item)
+    {
+        if (item != "+" && item != "-" && item != "%" && item != "*" && item != "=" && Operador is null)
+        {
+            int valor = Convert.ToInt32(item);
+            Numero1.Add(valor);
+            resultado = string.Join("",Numero1);
+        }
+        else if (item == "=")
+        {
+            resultado = RealizaCalculo().ToString();
+            LimpaVariaveis();
+
+        }   
+        else if (item == "+" || item == "-" || item == "%" || item == "*")
+        {
+            Operador = item;
+            resultado = string.Concat(string.Join("", Numero1) + " " + Operador);
+        }
+        else
+        {
+            int valor = Convert.ToInt32(item);
+            Numero2.Add(valor);
+            resultado = string.Concat(string.Join("", Numero1) + " " + Operador + " " + string.Join("", Numero2));
+
+        }
+    }
+}
